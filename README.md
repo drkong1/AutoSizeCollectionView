@@ -1,5 +1,23 @@
 # AutoSizeCollectionView
 
+```
+let layout = UICollectionViewFlowLayout()
+layout.scrollDirection = .horizontal
+layout.minimumLineSpacing = 0
+layout.minimumInteritemSpacing = 0
+layout.estimatedItemSize = CGSize(width: 50, height: 40)
+
+class SimpleTextCell: UICollectionViewCell {
+    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        // If you override this method and want the cell size adjustments, call super first and make your own modifications to the returned
+        let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
+        print("preferred", attributes.indexPath.item, attributes.frame, layoutAttributes.frame)
+        attributes.size.width = 100
+        attributes.size.height = 40
+        return attributes
+    }
+}
+```
 
 ## ScreenShot
 ![image](https://github.com/drkong1/AutoSizeCollectionView/blob/main/screen.png)
