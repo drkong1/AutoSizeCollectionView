@@ -25,9 +25,9 @@ class SimpleTextCell: UICollectionViewCell {
 
 
 ## Log
-item에 20개를 더하고 reloadData() 하면
+When append 20 items and call reloadData()
 
-- estimatedItemSize 사용했을 때, 화면에 **보이는 만큼만** cell size 계산 함
+- If we use estimatedItemSize **propely**, we should calculate **Only visible cell's** size
 ```
 preferred 0 (-1.25, 9.75, 52.5, 20.5) (0.0, 0.0, 50.0, 40.0)
 preferred 1 (50.25, 9.75, 49.5, 20.5) (50.0, 0.0, 50.0, 40.0)
@@ -41,7 +41,7 @@ preferred 8 (398.75, 9.75, 52.5, 20.5) (400.0, 0.0, 50.0, 40.0)
 ```
 
 
-- estimatedItemSize 사용 안 하면 **item 개수만큼** cell size 계산 함
+- If we don't use estimatedItemSize, we should calculate **every cell's** size
 ```
 size 0
 size 1

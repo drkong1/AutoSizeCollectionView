@@ -28,12 +28,11 @@ import RxCocoa
 import RxViewController
 
 /*
- UICollectionView에서 그려질 numberOfItemsInSection 개수 만큼
+ If numberOfItemsInSection == 20,
  func collectionView(_ collectionView: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
- 이 호출 된다.
- 즉, 화면에 그려지지 않을 셀까지 한번에 크기를 계산 함
+ is called 20 times just after reloadData() whether cell is visible or not.
 
- estimatedItemSize를 잘 쓰면 화면에 보여지는 만큼만 계산 가능 함
+ If we use estimatedItemSize propely, we can calculate only visible cells.
  */
 
 class ViewController: UIViewController {
@@ -44,23 +43,24 @@ class ViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
 
-        // estimatedItemSize를 쓸 때, minimumLineSpacing, minimumInteritemSpacing은 둘다 0이든가 둘다 0이 아니든가 해야 함
-        layout.minimumLineSpacing = 0 // The default value of this property is 10.0.
-        layout.minimumInteritemSpacing = 0 // The default value of this property is 10.0.
+        // When using estimatedItemSize, both minimumLineSpacing, minimumInteritemSpacing should be zero or nonzero.
+        layout.minimumLineSpacing = 0 // Apple: The default value of this property is 10.0.
+        layout.minimumInteritemSpacing = 0 // Apple: The default value of this property is 10.0.
 
         /*
-         estimatedItemSize를 너무 작게 하면, estimatedItemSize를 쓰는 장점이 없어짐.
-         예를 들어서 layout.estimatedItemSize = CGSize(width: 1, height: 40)로 하면
-         화면에 보여지지 않을 셀들까지 전부 preferredLayoutAttributesFitting 호출 됨
+         If we set estimatedItemSize too small, we can not improve performance.
+         For instance,
+         If we set layout.estimatedItemSize = CGSize(width: 1, height: 40),
+         all cell's (include non visible cell's) preferredLayoutAttributesFitting are called immediately
          */
         if #available(iOS 10, *) {
             /*
-             func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes 에서
-             layoutAttributes.frame = (50, 50)인 걸로 봐서
-             automaticSize = (50, 50)인듯 함
-             그래서 UICollectionView의 height가 이보다 작을 땐
+             It seems UICollectionViewFlowLayout.automaticSize is (50.0, 50.0).
+             Because In func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes
+             layoutAttributes.frame is (50.0, 50.0).
+
+             So if UICollectionView's height is less than 50.0, Xcode console prints
              "the item height must be less than the height of the UICollectionView minus the section insets top and bottom values, minus the content insets top and bottom values."
-             로그 찍힘
              */
             layout.estimatedItemSize = CGSize(width: 50, height: 40) // UICollectionViewFlowLayout.automaticSize
         } else {
@@ -153,7 +153,7 @@ class SimpleTextCell: UICollectionViewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        // If you override this method and want the cell size adjustments, call super first and make your own modifications to the returned
+        // Apple: If you override this method and want the cell size adjustments, call super first and make your own modifications to the returned
         let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
         print("preferred", attributes.indexPath.item, attributes.frame, layoutAttributes.frame)
         attributes.size.width = 100
